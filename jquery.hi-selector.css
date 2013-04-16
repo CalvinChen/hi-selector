@@ -1,0 +1,51 @@
+#hi-selector-container {
+	width: 98%;
+	min-height: 220px;
+	border: 1px solid #AAAAAA;
+	margin: 5px;
+	padding: 5px;
+}
+
+#hi-selector-container .hi-body {
+	overflow: auto;
+}
+
+#hi-selector-container #hi-left-block {
+	width: 39.5%;
+	min-height: 100px;
+	float: left;
+	border: 1px solid #BBBBBB;
+}
+#hi-selector-container #hi-operators {
+	width: 19.5%;
+	float: left;
+}
+#hi-selector-container #hi-right-block {
+	width: 39.5%;
+	min-height: 100px;
+	float: left;
+	border: 1px solid #BBBBBB;
+}
+
+/* block */
+#hi-selector-container .hi-head {
+	color: rgb(128, 128, 128);
+	background-color: rgb(241, 248, 251);
+	padding: 3px;
+	padding-left: 6px;
+	font-weight: bold;
+	line-height: 2.2em;
+	vertical-align: middle;
+	border-bottom: 1px solid rgb(228, 228, 228);
+	width: 100%;
+}
+#hi-selector-container .hi-title {
+	width: 80%;
+	float: left;
+}
+#hi-selector-container .hi-search {
+	width: 20%;
+	float: right;
+}
+#hi-selector-container .hi-title .hi-title {
+}

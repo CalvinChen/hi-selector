@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Hi-Selector</title>
+<script type="text/javascript" src="jquery-1.9.1.js"></script>
+<script type="text/javascript" src="jquery.hi-selector.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$('#select').initHiSelector({});
+	});
+</script>
+<link href="jquery.hi-selector.css" rel="stylesheet" type="text/css"/>
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+	
+	<div id='select'></div>
+	<!-- <div>
+  <form id="manageRegionForm" method="post" class="form-horizontal ajaxpost">
+  <div class="row-fluid">
+  	<div class="span12">
+  	<table class="form-table" id="manageRegionTable">
+		<tbody>
+			<tr>
+				<th><label>1.选择区域：</label></th>
+				
+				<td colspan="4">
+					<label th:if="${regionId == null}" th:each="region : ${regions}">
+						<input type="checkbox" name="region" th:value="${region['regionId']}"/> 
+						<span th:text="${region['regionName']}"></span> 
+					</label>
+					<label th:each="region : ${regions}" th:if="${regionId != null} and ${regionId == region['regionId']}">
+						<input type="checkbox" name="region" th:value="${region['regionId']}" disabled="disabled" checked="checked"/> 
+						<span th:text="${region['regionName']}"></span> 
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<th valign="top"><label>2.选择货品：</label>
+				</th>
+				<td colspan="1" id="leftBlock">
+					<div class="manageRegionTableCon span3" style="overflow-y: scroll;overflow-x: hidden;">
+						<table class="form-table span3 ">
+							<thead class="item-thead span3">
+								<tr>
+									<th>商品/货品
+										<input type="text" name="searchLeft" placeholder="搜索商品……" class="input-small"/></th>
+								</tr>
+							</thead>
+							<tbody class="goodsItem">
+								<tr class="goodsItemTemplate span3" style="display: none;">
+									<td class="itemName"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+				<td class="span2">
+					<button id="add" type="button" title="添加选中项" class="btn btn-success pull-left">&nbsp;&nbsp;&nbsp;&gt;&nbsp;&nbsp;&nbsp;</button><br/>
+					<button id="addPrdt" type="button" title="添加选中项所属商品下所有商品及货品" class="btn btn-success pull-left">&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;&nbsp;</button><br/>
+					<button id="addAll" type="button" title="添加全部" class="btn btn-success pull-left">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;</button><br/>
+					<br/><br/><br/><br/><br/><br/>
+					<button id="del" type="button" title="移除选中项" class="btn btn-danger pull-right">&nbsp;&nbsp;&nbsp;&lt;&nbsp;&nbsp;&nbsp;</button><br/>
+					<button id="delPrdt" type="button" title="移除选中项所属商品下所有商品及货品" class="btn btn-danger pull-right">&nbsp;&nbsp;&nbsp;&lt;&lt;&nbsp;&nbsp;&nbsp;</button><br/>
+					<button id="delAll" type="button" title="移除全部" class="btn btn-danger pull-right">&nbsp;&nbsp;&nbsp;&lt;&lt;&lt;&nbsp;&nbsp;&nbsp;</button><br/>
+				</td>
+				<td colspan="1" id="rightBlock">
+					<div class="manageRegionTableCon span3" style="overflow-y: scroll;overflow-x: hidden;">
+						<table class="form-table span3 ">
+							<thead class="item-thead span3">
+								<tr>
+									<th>商品/货品
+										<input type="text" name="searchRight" placeholder="搜索商品……" class="input-small"/></th>
+								</tr>
+							</thead>
+							<tbody class="goodsItem">
+								<tr class="goodsItemTemplate span3" style="display: none;">
+									<td class="itemName"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+				<th>
+				</th>
+			</tr>
+		</tbody>
+	</table>
+  	</div>
+  </div>
+  	<div class="row-fluid">
+  		<div class="span11">
+  			<input type="hidden"/>
+  			<div class="span10" id="scriptContent"></div>
+  		</div>
+  	</div>
+	<div class="ui-dialog-buttonset">
+		<button type="submit" class="btn btn-primary">保&nbsp;存</button>
+		<button type="button" class="btn closeBtn">取&nbsp;消</button>
+	</div>
+	</form>
+<script th:inline="javascript">
+//<![CDATA[ 
+	$(function(){
+		var viewId = /*[[${viewId}]]*/ "";
+		var context = "#"+viewId;
+		var requestUrl = /*[[${requestUrl}]]*/ "";
+		var from = /*[[${from}]]*/ "";
+		var regionId = /*[[${regionId}]]*/ "";
+		var prdtList = /*[[${prdtList}]]*/ "";
+		var left = "#leftBlock", right = "#rightBlock";
+		var prdt = "prdt", region = "region";
+		
+		function init(){
+			Form.init(context, "#manageRegionForm");
+			fillBlock(left, prdtList);
+			
+		}
+		init();
+		function fillBlock(side, prdtList){
+			for(var i in prdtList){
+				var prdt = prdtList[i];
+				insertIntoBlock(side, prdt.id, null, "·" + prdt.name);
+				for(var goodsId in prdt.goodsDesc){
+					var desc = prdt.goodsDesc[goodsId];
+					insertIntoBlock(side, prdt.id, goodsId, "&nbsp;&nbsp;&nbsp;&nbsp;·" + desc);
+				}
+			}
+		}
+		
+		function insertRight(prdtId, goodsId, desc){ insertIntoBlock(right, prdtId, goodsId, desc); }
+		function insertLeft(prdtId, goodsId, desc){ insertIntoBlock(left, prdtId, goodsId, desc); }
+		function insertIntoBlock(side, prdtId, goodsId, desc){
+			if(!desc) return ;
+			var item = newGoodsItem().find(".itemName").html(desc).end()
+						.data("goodsId", goodsId).data("prdtId", prdtId);
+			$(side + " .goodsItem", context).append(item);
+		}
+		function insertItem(side, item){ 
+			$(side + " .goodsItem", context).append(cloneWithData(item).show().removeClass("moved").removeClass("filtered"));
+			$("input[name^=search]", context).keyup();
+		}
+		function insertItemAfter(side, index, item){ 
+			$(side + " .goodsItem tr:eq(" + index + ")", context).after(cloneWithData(item).show()
+					.removeClass("moved").removeClass("filtered"));
+			$("input[name^=search]", context).keyup();
+		}
+		function hasPrdt(side, prdtId, clone){
+			clone = (clone === undefined ? true : clone);
+			var $list = getAllItem(side);
+			for ( var i = 1; i <= $list.length; i++) {
+				var $item = $($list[i - 1]);
+				if($item.data("prdtId") == prdtId && !$item.data("goodsId")){ 
+					if(clone) return {index:i,item:cloneWithData($item)};
+					else return {index:i,item:$item};
+				}
+			}
+			return null;
+		}
+		function hasGoods(side, prdtId, withHide){
+			withHide = (withHide === undefined ? true : withHide);
+			var $list = getAllItem(side), hasChild = false;
+			for(var i = 0; i < $list.length; i++){
+				var $item = $($list[i]);
+				if($item.data("prdtId") == prdtId && $item.data("goodsId")) {
+					if(withHide || !$item.is(":hidden")){ hasChild = true;break; }
+				}
+			}
+			return hasChild;
+		}
+		function setVisibleOnePrdtAndGoods($list, prdtId, action){
+			for(var i = 0; i < $list.length; i++){
+				var $item = $($list[i]);
+				if($item.data("prdtId") == prdtId) action == "show"? $item.show() : $item.hide();
+			}
+		}
+		function cloneWithData(item){
+			var data = item.data();
+			return item.clone().data(data);
+		}
+		function goodsItemTemplate(){ return $("#leftBlock tr.goodsItemTemplate", context); }
+		
+		//复制货品项模板 
+		function newGoodsItem(){
+			return goodsItemTemplate().clone().removeClass("goodsItemTemplate").show();
+		}
+		//保存之前格式化数据 
+		$("#manageRegionForm", context).data("beforeSerialize", function(){
+			
+			var $list = getAllItem(right), regions = $("[name=region]:checked", context), list = [];
+			if(regions.length > 0){
+				for(var i = 0; i < $list.length; i++){
+					var $item = $($list[i]);
+					if($item.hasClass("moved")) continue;
+					for(var j = 0; j < regions.length; j++){
+						var $region = $(regions[j]);
+						list.push({prdtId : $item.data("prdtId"), goodsId : $item.data("goodsId"), regionId : $region.val()});
+					}
+				}
+				jQuery.restPost(requestUrl,list,function(response){
+					consolelog("总共新增" + response + "条ProductRegion记录！");
+					$(context).dialogClose();
+				});
+			} else {
+				$.messageBox.warning({message : "尚未选择任何区域！"});
+			}
+			return false;
+		});
+		
+		//清空区块
+		function clearBlock(side){ $(side + " .goodsItem tr:gt(0)", context).remove(); }
+		//点击选中 
+		$(".goodsItem tr", context).live("click", (function(){
+			$(".goodsItem tr", context).removeClass("active");
+			$(this).addClass("active");
+		})); 
+		
+		//置灰某项或全部
+		function setMovedStyle(isAll){
+			if(isAll) $(left + " .goodsItem tr:gt(0)", context).addClass("moved");
+			else $(left + " .goodsItem tr.active", context).addClass("moved").removeClass("active");
+		}
+		
+		//获取选中项
+		function getChosenItem(side){ return $(side + " .goodsItem tr.active", context); }
+		//获取所有项
+		function getAllItem(side){ return $(side + " .goodsItem tr:gt(0)", context); }
+		
+		//添加及添加全部 
+		$("#add, #addPrdt, #addAll", context).click(function(){
+			var action = $(this).attr("id");
+			if(action == "add"){
+				var $item = getChosenItem(left);
+				if($item && !$item.hasClass("moved")){
+					add($item);
+				}
+			} else if(action == "addAll"){
+				clearBlock(right);
+				fillBlock(right, prdtList);
+				setMovedStyle(true);
+			} else if(action == "addPrdt"){//添加商品及其下货品
+				var $item = getChosenItem(left);
+				if($item){
+					var prdtId = $item.data("prdtId");
+					var $leftList = getAllItem(left);//找出商品下所有商品货品添加
+					for(var i = 0; i < $leftList.length; i++){
+						var $tempItem = $($leftList[i]);
+						if($tempItem.data("prdtId") == prdtId && !$tempItem.hasClass("moved")){
+							add($tempItem);
+						}
+					}
+				}
+			}
+		});
+		function add($item){
+			if($item.data("goodsId")) {//为货品
+				var prdtId = $item.data("prdtId");
+				var prdt = hasPrdt(right, prdtId); 
+				if(null != prdt){ //已有所属商品
+					insertItemAfter(right, prdt.index, $item);
+				} else {//尚无所属商品
+					prdt = hasPrdt(left, prdtId, false); 
+					prdt.item.addClass("moved");
+					insertItem(right, prdt.item.removeClass("active"));
+					insertItem(right, $item);
+				}
+			} else {//为商品
+				var prdtId = $item.data("prdtId");
+				var prdt = hasPrdt(right, prdtId, false); 
+				if(prdt) {
+					if(prdt.item.hasClass("moved")){
+						prdt.item.removeClass("moved");
+					}
+				} else insertItem(right, $item);
+			}
+			$item.addClass("moved");
+		}
+		$("#del, #delPrdt, #delAll", context).click(function(){
+			var action = $(this).attr("id");
+			if(action == "del"){
+				var $item = getChosenItem(right);
+				if($item && !$item.hasClass("moved")){
+					del($item);
+				}
+			} else if(action == "delAll"){
+				clearBlock(left);
+				clearBlock(right);
+				fillBlock(left, prdtList);
+				$("input[name=searchLeft]", context).keyup();
+			} else if(action == "delPrdt"){
+				var $item = getChosenItem(right);
+				if($item){
+					var prdtId = $item.data("prdtId");
+					var $rightList = getAllItem(right);
+					for(var i = 0; i < $rightList.length; i++){
+						var $tempItem = $($rightList[i]);
+						if($tempItem.data("prdtId") == prdtId){
+							del($tempItem);
+						}
+					}
+				}
+			}
+		});
+		function del($item){
+			var $leftList = getAllItem(left), prdtId = $item.data("prdtId"), goodsId = $item.data("goodsId");
+			if(goodsId) {//货品
+				//右区块
+				$item.remove();
+				if(!hasGoods(right, prdtId)){//所属商品下再无货品
+					var prdt = hasPrdt(right, prdtId, false).item;
+					if(prdt.hasClass("moved")) prdt.remove();
+				}
+				//左区块 
+				for(var i = 0; i < $leftList.length; i++){
+					var $temp = $($leftList[i]);
+					if($temp.data("prdtId") == prdtId && $temp.data("goodsId") == goodsId){
+						$temp.removeClass("moved");break;
+					}
+				}
+			} else {//商品 
+				//右区块
+				var $rightList = getAllItem(right);
+				for(var i = 0; i < $rightList.length; i++){
+					var $temp = $($rightList[i]);
+					if($temp.data("prdtId") == prdtId){
+						$temp.remove();
+					}
+				}
+				//左区块
+				for(var i = 0; i < $leftList.length; i++){
+					var $temp = $($leftList[i]);
+					if($temp.data("prdtId") == prdtId){
+						$temp.removeClass("moved");
+					}
+				}
+			}
+		}
+		$("input[name^=search]", context).keyup(function(){
+			var name = $(this).attr("name"), key = $(this).val().toLowerCase(), $list;
+			if($.trim(key) == null) return;
+			if(name == "searchLeft") $list = getAllItem(left);
+			else $list = getAllItem(right);
+			for(var i = $list.length - 1; i >= 0; i--){
+				var $item = $($list[i]);
+				if($item.data("goodsId") == null) {//商品
+					if($.trim($item.text()).toLowerCase().indexOf(key) == -1){//不包含关键字
+						setVisibleOnePrdtAndGoods($list, $item.data("prdtId"), "hide");
+					} else {//包含关键字
+						setVisibleOnePrdtAndGoods($list, $item.data("prdtId"), "show");
+					}
+				}
+			}
+			/* for(var i = $list.length - 1; i >= 0; i--){
+				var $item = $($list[i]);
+				if($.trim($item.text()).toLowerCase().indexOf(key) == -1){//不包含关键字
+					if($item.data("goodsId") == null) {//商品
+						var $next = $item.nextAll("tr:not(:hidden)");
+						if(null != $next && $next.length > 0){
+							if($next.data("prdtId") == $item.data("prdtId")) $item.show().addClass("filtered");
+							else $item.hide();
+						} else $item.hide();
+					}
+					else $item.hide();//货品 
+				} else {//包含关键字
+					if($item.data("goodsId") == null) $item.show().removeClass("filtered");
+					else $item.show();
+				}
+			} */
+		});
+	});
+//]]> 
+</script>
+</div> -->
+	
+	
+</body>
+</html>
